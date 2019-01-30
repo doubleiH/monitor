@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+
+
+<script>
+    var interval;
+    window.onload = function () {
+
+        InitAllTableInfo();
+        interval = setInterval(InitAllTableInfo, 1000);
+    };
+
+
+    function InitTransErrInfo() {
+
+        var ajaxresult = ajaxFun("findAll");
+
+
+        if (result['tspRetCode'] != '00') {
+
+            $("#errorValue").html("");
+            var _error = "<tr style='background-color: deeppink' ><td style='width:8%'>" + result['clientDate'] + "</td><td style='width:8%'>" + result['clientTime'] + "</td><td style='width:8%'>" + result['clientTraceNum'] + "</td><td style='width:8%'>" + GetValue(result['tranCode'])
+                + "</td><td style='width:10%'>" + Number(result['tranAmt']) / 100 + "</td><td style='width:12%'>" + result['accountNo'] + "</td><td style='width:12%'>" + result['accountNo2'] + "</td><td style='width:5%'>" + result['tspRetCode'] + "</td></tr>";
+
+            $('#errorValue').prepend(_error);
+        }
+
+
+    }
+
+    function InitAllTableInfo() {
+
+        var ajaxresult = ajaxFun("findAll");
+
+        if ("error" != ajaxresult) {
+
+            $("#tableValue").html("");
+            var item;
+            $.each(ajaxresult, function (i, result) {
+
+                    if (result['tspRetCode'] == '00') {
+                        item = "<tr><td style='width:8%'>" + result['clientDate'] + "</td><td style='width:8%'>" + result['clientTime'] + "</td><td style='width:8%'>" + result['clientTraceNum'] + "</td><td style='width:8%'>" + GetValue(result['tranCode'])
+                            + "</td><td style='width:10%'>" + Number(result['tranAmt']) / 100 + "</td><td style='width:12%'>" + result['accountNo'] + "</td><td style='width:12%'>" + result['accountNo2'] + "</td><td style='width:5%'>" + result['tspRetCode'] + "</td></tr>";
+
+                    } else {
+
+                        item = "<tr style='color: #ff0000;' ><td style='width:8%'>" + result['clientDate'] + "</td><td style='width:8%'>" + result['clientTime'] + "</td><td style='width:8%'>" + result['clientTraceNum'] + "</td><td style='width:8%'>" + GetValue(result['tranCode'])
+                            + "</td><td style='width:10%'>" + Number(result['tranAmt']) / 100 + "</td><td style='width:12%'>" + result['accountNo'] + "</td><td style='width:12%'>" + result['accountNo2'] + "</td><td style='width:5%'>" + result['tspRetCode'] + "</td></tr>";
+
+                    }
+                    //$('.table').append(item);
+                    $('#tableValue').prepend(item);
+
+                    $('td').css({'text-align': 'center', 'height': "30"});
+                }
+            );
+        }
+    }
+
+
+    function ajaxFun(url) {
+        var result;
+        $.ajax({
+            type: "POST",
+            url: "/" + url,
+            dataType: "json",
+            async:false,
+            success: function (json) {
+                result = json;
+            },
+            error: function (jqXHR) {
+                console.log("发生错误：" + jqXHR.status);
+                result = "error";
+            }
+        })
+
+        return result;
+    }
+</script>
+<body style="overflow: auto">
+
+<table class="table" border="1" style="width: 95%;margin-left:2.5%;border-collapse:collapse;">
+
+    <thead>
+
+    <th>交易日期</th>
+    <th>交易时间</th>
+    <th>流水号</th>
+    <th>交易类型</th>
+    <th>交易金额</th>
+    <th>交易账号</th>
+    <th>转入账号</th>
+    <th>返回码</th>
+    </thead>
+
+    <tbody id="tableValue">
+
+    </tbody>
+
+</table>
+
+
+</body>
+
+<script src="lib/jquery.js" type="text/javascript"></script>
+<script src="lib/TranNameJson.js" type="text/javascript"></script>
+
+
+</html>
